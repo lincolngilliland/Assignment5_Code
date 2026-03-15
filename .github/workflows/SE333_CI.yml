@@ -18,6 +18,9 @@ jobs:
           distribution: 'temurin'
           architecture: x64
 
+      - name: Install Playwright Browsers
+        run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps"
+
       - name: Install Linter
         run: mvn validate --no-transfer-progress
 
@@ -39,4 +42,11 @@ jobs:
         with:
           name: jacoco.xml
           path: target/site/jacoco/jacoco.xml
+          if-no-files-found: warn
+
+      - name: Upload Playwright Videos
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-videos
+          path: videos/
           if-no-files-found: warn
