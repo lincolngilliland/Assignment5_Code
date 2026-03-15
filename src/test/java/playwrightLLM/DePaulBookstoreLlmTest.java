@@ -3,6 +3,7 @@ package playwrightLLM;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import org.junit.jupiter.api.DisplayName;
@@ -23,23 +24,29 @@ class DePaulBookstoreLlmTest {
                     .setRecordVideoDir(Paths.get("videos/playwrightLLM"))
                     .setRecordVideoSize(1280, 720));
             Page page = context.newPage();
+                page.setDefaultTimeout(30000);
 
             page.navigate("https://depaul.bncollege.com");
 
-            page.locator("input[name='searchTerm'], input[placeholder*='Search'], input[type='search']").first().fill("earbuds");
+                typeInVisible(page, "earbuds",
+                    "input[name='searchTerm']",
+                    "input[placeholder*='Search']",
+                    "input[type='search']");
             page.keyboard().press("Enter");
 
-            page.locator("button:has-text('Brand'), [aria-label*='Brand'], text=Brand").first().click();
-            page.locator("label:has-text('JBL'), input[value='JBL'], text=JBL").first().click();
+                clickVisible(page, "button:has-text('Brand')", "[aria-label*='Brand']", "text=Brand");
+                clickVisible(page, "label:has-text('JBL')", "input[value='JBL']", "text=JBL");
 
-            page.locator("button:has-text('Color'), [aria-label*='Color'], text=Color").first().click();
-            page.locator("label:has-text('Black'), input[value='Black'], text=Black").first().click();
+                clickVisible(page, "button:has-text('Color')", "[aria-label*='Color']", "text=Color");
+                clickVisible(page, "label:has-text('Black')", "input[value='Black']", "text=Black");
 
-            page.locator("button:has-text('Price'), [aria-label*='Price'], text=Price").first().click();
-            page.locator("label:has-text('Over $50'), text=Over $50").first().click();
+                clickVisible(page, "button:has-text('Price')", "[aria-label*='Price']", "text=Price");
+                clickVisible(page, "label:has-text('Over $50')", "text=Over $50");
 
-            page.locator("a:has-text('JBL Quantum True Wireless Noise Cancelling Gaming'), text=JBL Quantum True Wireless Noise Cancelling Gaming").first().click();
-            page.locator("button:has-text('Add to Cart'), text=Add to Cart").first().click();
+                clickVisible(page,
+                    "a:has-text('JBL Quantum True Wireless Noise Cancelling Gaming')",
+                    "text=JBL Quantum True Wireless Noise Cancelling Gaming");
+                clickVisible(page, "button:has-text('Add to Cart')", "text=Add to Cart");
 
             page.waitForTimeout(1500);
             assertThat(page.locator("body")).containsText("1 Item");
@@ -47,5 +54,36 @@ class DePaulBookstoreLlmTest {
             context.close();
             browser.close();
         }
+    }
+
+    private static void clickVisible(Page page, String... selectors) {
+        for (String selector : selectors) {
+            Locator candidates = page.locator(selector);
+            int count = candidates.count();
+            for (int i = 0; i < count; i++) {
+                Locator locator = candidates.nth(i);
+                if (locator.isVisible()) {
+                    locator.click();
+                    return;
+                }
+            }
+        }
+        throw new IllegalStateException("Could not find clickable element for selectors");
+    }
+
+    private static void typeInVisible(Page page, String value, String... selectors) {
+        for (String selector : selectors) {
+            Locator candidates = page.locator(selector);
+            int count = candidates.count();
+            for (int i = 0; i < count; i++) {
+                Locator locator = candidates.nth(i);
+                if (locator.isVisible()) {
+                    locator.click();
+                    locator.fill(value);
+                    return;
+                }
+            }
+        }
+        throw new IllegalStateException("Could not find input element for selectors");
     }
 }

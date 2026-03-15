@@ -174,10 +174,14 @@ class DePaulBookstoreTraditionalTest {
 
     private static void clickFirstVisible(Page page, String... selectors) {
         for (String selector : selectors) {
-            Locator locator = page.locator(selector).first();
-            if (locator.count() > 0 && locator.isVisible()) {
-                locator.click();
-                return;
+                        Locator candidates = page.locator(selector);
+                        int count = candidates.count();
+                        for (int i = 0; i < count; i++) {
+                                Locator locator = candidates.nth(i);
+                                if (locator.isVisible()) {
+                                        locator.click();
+                                        return;
+                                }
             }
         }
         throw new IllegalStateException("Could not find clickable element for selectors: " + String.join(", ", selectors));
@@ -185,11 +189,15 @@ class DePaulBookstoreTraditionalTest {
 
     private static void typeInFirst(Page page, String value, String... selectors) {
         for (String selector : selectors) {
-            Locator locator = page.locator(selector).first();
-            if (locator.count() > 0 && locator.isVisible()) {
-                locator.click();
-                locator.fill(value);
-                return;
+                        Locator candidates = page.locator(selector);
+                        int count = candidates.count();
+                        for (int i = 0; i < count; i++) {
+                                Locator locator = candidates.nth(i);
+                                if (locator.isVisible()) {
+                                        locator.click();
+                                        locator.fill(value);
+                                        return;
+                                }
             }
         }
         throw new IllegalStateException("Could not find input element for selectors: " + String.join(", ", selectors));
