@@ -14,21 +14,29 @@ jobs:
       - name: setupJava
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '23'
           distribution: 'temurin'
           architecture: x64
 
       - name: Install Linter
-        ##TODO
+        run: mvn validate --no-transfer-progress
 
       - name: Run Checkstyle
-        ##TODO
+        run: mvn checkstyle:checkstyle --no-transfer-progress
 
       - name: Upload Checkstyle Result
-        ##TODO
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkstyle.xml
+          path: target/checkstyle-result.xml
+          if-no-files-found: warn
 
       - name: Run Maven Test
-        ##TODO
+        run: mvn test --no-transfer-progress
 
       - name: Jacoco Report
-        ##TODO
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco.xml
+          path: target/site/jacoco/jacoco.xml
+          if-no-files-found: warn
