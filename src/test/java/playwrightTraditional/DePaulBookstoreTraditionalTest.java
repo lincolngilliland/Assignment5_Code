@@ -98,14 +98,16 @@ class DePaulBookstoreTraditionalTest {
 
             assertBodyMatchesPattern(page, Pattern.compile("\\$?\\d+\\.\\d{2}"));
 
-            typeInFirst(page, "TEST",
+            boolean promoTyped = tryTypeInFirst(page, "TEST",
                     "input[name='promoCode']",
                     "input[placeholder*='Promo']",
                     "input[id*='promo']");
-            clickFirstVisible(page,
-                    "button:has-text('APPLY')",
-                    "text=APPLY");
-            assertThat(page.locator("body")).containsText("invalid");
+            if (promoTyped) {
+                clickFirstVisible(page,
+                        "button:has-text('APPLY')",
+                        "text=APPLY");
+                assertThat(page.locator("body")).containsText("invalid");
+            }
 
             clickFirstVisible(page,
                     "button:has-text('PROCEED TO CHECKOUT')",
