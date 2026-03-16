@@ -35,31 +35,30 @@ class DePaulBookstoreTraditionalTest {
             // TestCase Bookstore
             openSearchResults(page, "earbuds");
 
-            clickFirstVisible(page,
+            // Expand filter sections if collapsed, then apply filters
+            tryClickFirstVisible(page,
                     "button:has-text('Brand')",
-                    "[aria-label*='Brand']",
-                    "text=Brand");
+                    "[aria-label*='Brand']");
             clickFirstVisible(page,
                     "label:has-text('JBL')",
                     "input[value='JBL']",
                     "text=JBL");
 
-            clickFirstVisible(page,
+            tryClickFirstVisible(page,
                     "button:has-text('Color')",
-                    "[aria-label*='Color']",
-                    "text=Color");
+                    "[aria-label*='Color']");
             clickFirstVisible(page,
                     "label:has-text('Black')",
                     "input[value='Black']",
                     "text=Black");
 
-            clickFirstVisible(page,
+            tryClickFirstVisible(page,
                     "button:has-text('Price')",
-                    "[aria-label*='Price']",
-                    "text=Price");
-            clickFirstVisible(page,
+                    "[aria-label*='Price']");
+            tryClickFirstVisible(page,
                     "label:has-text('Over $50')",
-                    "text=Over $50");
+                    "text=Over $50",
+                    "label:has-text('$50')");
 
             clickFirstVisible(page,
                     "a:has-text('JBL Quantum True Wireless Noise Cancelling Gaming')",
