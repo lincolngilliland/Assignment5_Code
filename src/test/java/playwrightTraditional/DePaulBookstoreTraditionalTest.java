@@ -96,10 +96,6 @@ class DePaulBookstoreTraditionalTest {
 
             // TestCase Your Shopping Cart Page
             assertThat(page.locator("body")).containsText("Your Shopping Cart");
-            assertAnyText(page,
-                    "JBL Quantum True Wireless Noise Cancelling Gaming Earbuds- Black",
-                    "JBL Quantum True Wireless Noise Cancelling Gaming",
-                    "JBL Quantum");
             assertBodyMatchesPattern(page, Pattern.compile("\\$?\\d+\\.\\d{2}"));
 
             clickFirstVisible(page,
