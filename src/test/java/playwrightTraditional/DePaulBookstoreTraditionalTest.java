@@ -257,3 +257,4 @@ class DePaulBookstoreTraditionalTest {
             throw new AssertionError("Body text did not match expected pattern: " + pattern);
         }
     }
+}
