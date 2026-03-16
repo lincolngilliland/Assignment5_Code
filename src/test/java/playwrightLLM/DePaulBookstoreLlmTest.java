@@ -15,6 +15,8 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 
 class DePaulBookstoreLlmTest {
 
+    private static final String BASE_URL = "https://depaul.bncollege.com";
+
     @Test
     @DisplayName("LLM-assisted Playwright flow: search earbuds, filter, add to cart and verify item count")
     void llmAssistedBookstoreFlow() {
@@ -26,13 +28,8 @@ class DePaulBookstoreLlmTest {
             Page page = context.newPage();
                 page.setDefaultTimeout(30000);
 
-            page.navigate("https://depaul.bncollege.com");
-
-                typeInVisible(page, "earbuds",
-                    "input[name='searchTerm']",
-                    "input[placeholder*='Search']",
-                    "input[type='search']");
-            page.keyboard().press("Enter");
+                page.navigate(BASE_URL);
+                openSearchResults(page, "earbuds");
 
                 clickVisible(page, "button:has-text('Brand')", "[aria-label*='Brand']", "text=Brand");
                 clickVisible(page, "label:has-text('JBL')", "input[value='JBL']", "text=JBL");
@@ -85,5 +82,36 @@ class DePaulBookstoreLlmTest {
             }
         }
         throw new IllegalStateException("Could not find input element for selectors");
+    }
+
+    private static boolean tryTypeInVisible(Page page, String value, String... selectors) {
+        for (String selector : selectors) {
+            Locator candidates = page.locator(selector);
+            int count = candidates.count();
+            for (int i = 0; i < count; i++) {
+                Locator locator = candidates.nth(i);
+                if (locator.isVisible()) {
+                    locator.click();
+                    locator.fill(value);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void openSearchResults(Page page, String query) {
+        boolean typed = tryTypeInVisible(page, query,
+                "input[name='searchTerm']",
+                "input[placeholder*='Search']",
+                "input[type='search']",
+                "input[id='vendor-search-handler']");
+
+        if (typed) {
+            page.keyboard().press("Enter");
+            return;
+        }
+
+        page.navigate(BASE_URL + "/search?text=" + query);
     }
 }

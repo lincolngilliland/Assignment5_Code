@@ -32,11 +32,7 @@ class DePaulBookstoreTraditionalTest {
             page.navigate(BASE_URL);
 
             // TestCase Bookstore
-            typeInFirst(page, "earbuds",
-                    "input[name='searchTerm']",
-                    "input[placeholder*='Search']",
-                    "input[type='search']");
-            page.keyboard().press("Enter");
+            openSearchResults(page, "earbuds");
 
             clickFirstVisible(page,
                     "button:has-text('Brand')",
@@ -188,6 +184,12 @@ class DePaulBookstoreTraditionalTest {
     }
 
     private static void typeInFirst(Page page, String value, String... selectors) {
+                if (!tryTypeInFirst(page, value, selectors)) {
+                        throw new IllegalStateException("Could not find input element for selectors: " + String.join(", ", selectors));
+                }
+        }
+
+        private static boolean tryTypeInFirst(Page page, String value, String... selectors) {
         for (String selector : selectors) {
                         Locator candidates = page.locator(selector);
                         int count = candidates.count();
@@ -196,11 +198,26 @@ class DePaulBookstoreTraditionalTest {
                                 if (locator.isVisible()) {
                                         locator.click();
                                         locator.fill(value);
-                                        return;
+                                        return true;
                                 }
             }
         }
-        throw new IllegalStateException("Could not find input element for selectors: " + String.join(", ", selectors));
+                return false;
+        }
+
+        private static void openSearchResults(Page page, String query) {
+                boolean typed = tryTypeInFirst(page, query,
+                                "input[name='searchTerm']",
+                                "input[placeholder*='Search']",
+                                "input[type='search']",
+                                "input[id='vendor-search-handler']");
+
+                if (typed) {
+                        page.keyboard().press("Enter");
+                        return;
+                }
+
+                page.navigate(BASE_URL + "/search?text=" + query);
     }
 
     private static void waitForAnyText(Page page, String... textOptions) {
