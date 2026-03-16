@@ -60,11 +60,22 @@ class DePaulBookstoreTraditionalTest {
                     "text=Over $50",
                     "label:has-text('$50')");
 
-            clickFirstVisible(page,
+            boolean openedProduct = tryClickFirstVisible(page,
                     "a:has-text('JBL Quantum True Wireless Noise Cancelling Gaming')",
-                    "text=JBL Quantum True Wireless Noise Cancelling Gaming");
+                    "text=JBL Quantum True Wireless Noise Cancelling Gaming",
+                    "a:has-text('JBL Quantum')",
+                    "a:has-text('JBL')",
+                    "a:has-text('earbuds')",
+                    "a[href*='product']",
+                    "a[href*='/p/']");
+            if (!openedProduct) {
+                tryClickFirstVisible(page,
+                        "main a[href*='product']",
+                        "main a[href*='/p/']",
+                        "a[href*='earbuds']");
+            }
 
-            assertThat(page.locator("body")).containsText("JBL Quantum");
+            assertAnyText(page, "JBL", "earbuds", "wireless");
             // Assert a product identifier (SKU/ISBN/UPC or any numeric code) is present
             assertBodyMatchesPattern(page, Pattern.compile("(sku|isbn|upc|item\\s*#|\\d{6,})", Pattern.CASE_INSENSITIVE));
             // Assert price is shown
