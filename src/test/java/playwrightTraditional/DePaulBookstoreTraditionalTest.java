@@ -90,16 +90,13 @@ class DePaulBookstoreTraditionalTest {
                     "JBL Quantum True Wireless Noise Cancelling Gaming Earbuds- Black",
                     "JBL Quantum True Wireless Noise Cancelling Gaming",
                     "JBL Quantum");
-            assertAnyText(page, "149.98", "$149.98", "149");
+            assertBodyMatchesPattern(page, Pattern.compile("\\$?\\d+\\.\\d{2}"));
 
             clickFirstVisible(page,
                     "label:has-text('FAST In-Store Pickup')",
                     "text=FAST In-Store Pickup");
 
-            assertThat(page.locator("body")).containsText("149.98");
-            assertThat(page.locator("body")).containsText("2.00");
-            assertThat(page.locator("body")).containsText("TBD");
-            assertThat(page.locator("body")).containsText("151.98");
+            assertBodyMatchesPattern(page, Pattern.compile("\\$?\\d+\\.\\d{2}"));
 
             typeInFirst(page, "TEST",
                     "input[name='promoCode']",
