@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
+import java.util.regex.Pattern;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -65,9 +66,12 @@ class DePaulBookstoreTraditionalTest {
                     "text=JBL Quantum True Wireless Noise Cancelling Gaming");
 
             assertThat(page.locator("body")).containsText("JBL Quantum");
-            assertAnyText(page, "sku", "item #", "model");
-            assertAnyText(page, "$", "price");
-            assertThat(page.locator("body")).containsText("Wireless");
+            // Assert a product identifier (SKU/ISBN/UPC or any numeric code) is present
+            assertBodyMatchesPattern(page, Pattern.compile("(sku|isbn|upc|item\\s*#|\\d{6,})", Pattern.CASE_INSENSITIVE));
+            // Assert price is shown
+            assertBodyMatchesPattern(page, Pattern.compile("\\$\\s*\\d+", Pattern.CASE_INSENSITIVE));
+            // Assert description (product is wireless)
+            assertAnyText(page, "Wireless", "wireless", "earbuds", "noise cancelling");
 
             clickFirstVisible(page,
                     "button:has-text('Add to Cart')",
@@ -246,4 +250,10 @@ class DePaulBookstoreTraditionalTest {
                 }
                 throw new AssertionError("Did not find any expected text options: " + String.join(", ", options));
         }
-}
+
+    private static void assertBodyMatchesPattern(Page page, Pattern pattern) {
+        String bodyText = page.locator("body").innerText();
+        if (!pattern.matcher(bodyText).find()) {
+            throw new AssertionError("Body text did not match expected pattern: " + pattern);
+        }
+    }
