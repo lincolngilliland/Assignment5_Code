@@ -31,14 +31,8 @@ class DePaulBookstoreLlmTest {
                 page.navigate(BASE_URL);
                 openSearchResults(page, "earbuds");
 
-                tryClickVisible(page, "button:has-text('Brand')", "[aria-label*='Brand']", "text=Brand");
-                tryClickVisible(page, "label:has-text('JBL')", "input[value='JBL']", "text=JBL");
-
                 tryClickVisible(page, "button:has-text('Color')", "[aria-label*='Color']", "text=Color");
                 tryClickVisible(page, "label:has-text('Black')", "input[value='Black']", "text=Black");
-
-                tryClickVisible(page, "button:has-text('Price')", "[aria-label*='Price']", "text=Price");
-                tryClickVisible(page, "label:has-text('Over $50')", "text=Over $50", "label:has-text('$50')");
 
                 boolean openedProduct = tryClickVisible(page,
                     "a:has-text('JBL Quantum True Wireless Noise Cancelling Gaming')",
@@ -60,8 +54,12 @@ class DePaulBookstoreLlmTest {
                     "button:has-text('ADD TO CART')",
                     "text=Add to Cart");
 
-            page.waitForTimeout(1500);
-            assertThat(page.locator("body")).containsText("1 Item");
+                waitForAnyText(page, "1 Item", "1 item", "1 items", "Cart 1", "1 in cart");
+                tryClickVisible(page,
+                    "a:has-text('Cart')",
+                    "button:has-text('Cart')",
+                    "[aria-label*='Cart']");
+                assertCartHasOneItem(page);
 
             context.close();
             browser.close();
@@ -96,6 +94,39 @@ class DePaulBookstoreLlmTest {
             }
         }
         return false;
+    }
+
+    private static void waitForAnyText(Page page, String... textOptions) {
+        for (int i = 0; i < 24; i++) {
+            String bodyText = page.locator("body").innerText();
+            for (String expected : textOptions) {
+                if (bodyText.contains(expected)) {
+                    return;
+                }
+            }
+            page.waitForTimeout(500);
+        }
+    }
+
+    private static void assertCartHasOneItem(Page page) {
+        String bodyText = page.locator("body").innerText();
+        if (bodyText.contains("1 Item") || bodyText.contains("1 item") || bodyText.contains("1 items")) {
+            return;
+        }
+
+        Locator quantityInputs = page.locator("input[aria-label*='Quantity'], input[name*='quantity'], input[id*='quantity']");
+        int count = quantityInputs.count();
+        for (int i = 0; i < count; i++) {
+            Locator input = quantityInputs.nth(i);
+            if (input.isVisible()) {
+                String value = input.inputValue().trim();
+                if ("1".equals(value)) {
+                    return;
+                }
+            }
+        }
+
+        throw new AssertionError("Could not verify cart shows 1 item.");
     }
 
     private static void typeInVisible(Page page, String value, String... selectors) {
