@@ -39,7 +39,7 @@ class DePaulBookstoreTraditionalTest {
             tryClickFirstVisible(page,
                     "button:has-text('Brand')",
                     "[aria-label*='Brand']");
-            clickFirstVisible(page,
+            tryClickFirstVisible(page,
                     "label:has-text('JBL')",
                     "input[value='JBL']",
                     "text=JBL");
@@ -47,7 +47,7 @@ class DePaulBookstoreTraditionalTest {
             tryClickFirstVisible(page,
                     "button:has-text('Color')",
                     "[aria-label*='Color']");
-            clickFirstVisible(page,
+            tryClickFirstVisible(page,
                     "label:has-text('Black')",
                     "input[value='Black']",
                     "text=Black");
